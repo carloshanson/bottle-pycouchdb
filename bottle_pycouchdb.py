@@ -1,5 +1,6 @@
 from bottle import PluginError
 import pycouchdb
+from pycouchdb.exceptions import NotFound
 import inspect
 
 class PyCouchDBPlugin:
@@ -34,8 +35,8 @@ class PyCouchDBPlugin:
         keyword = config.get('keyword', self.keyword)
 
         # do nothing if callback does not accept keyword
-        args = inspect.getargspec(route.callback)[0]
-        if keyword not in args:
+        callback_signature = inspect.signature(route.callback)
+        if keyword not in callback_signature.parameters:
             return callback
 
         # wrap the callback
@@ -43,8 +44,12 @@ class PyCouchDBPlugin:
             # connect to CouchDB
             server = pycouchdb.Server(base_url, full_commit=full_commit,
                     authmethod=authmethod, verify=verify)
-            # connect to the database
-            db = server.database(database)
+            try:
+                # connect to the database
+                db = server.database(database)
+            except NotFound:
+                # create the database
+                db = server.create(database)
             # make keyword available in the callback
             kwargs[keyword] = db
             return callback(*args, **kwargs)
