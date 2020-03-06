@@ -8,4 +8,5 @@ setup(name='bottle-pycouchdb',
         author_email='carlos@clanhanson.com',
         license='MIT',
         py_modules=['bottle_pycouchdb'],
+        install_requires=['bottle', 'pycouchdb'],
         zip_safe=False)

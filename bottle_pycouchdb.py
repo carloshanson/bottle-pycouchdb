@@ -35,8 +35,11 @@ class PyCouchDBPlugin:
         keyword = config.get('keyword', self.keyword)
 
         # do nothing if callback does not accept keyword
-        callback_signature = inspect.signature(route.callback)
-        if keyword not in callback_signature.parameters:
+        try:
+            argspec = inspect.getargspec(route.callback)
+        except AttributeError as e:
+            argspec = inspect.getfullargspec(route.callback)
+        if keyword not in argspec.args:
             return callback
 
         # wrap the callback
