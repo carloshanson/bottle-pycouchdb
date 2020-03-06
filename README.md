@@ -5,9 +5,10 @@ Add support for [CouchDB](https://couchdb.apache.org/) to [Bottle](https://bottl
 ```python
 import bottle
 from bottle import route, run
-from bottle.ext import pycouchdb
+from bottle.ext.pycouchdb import Plugin
 
-couchdb = pycouchdb.Plugin('mydb')
+couchdb = Plugin('mydb')
+#couchdb = Plugin('mydb', 'http://username:password@localhost:5984')
 bottle.install(couchdb)
 
 @route('/view/<_id>')
